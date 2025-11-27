@@ -5,6 +5,7 @@ import '../model/product_model.dart';
 
 class ApiService {
   final String baseUrl = "https://fakestoreapi.com";
+  final String loginUrl = "https://fakestoreapi.com/auth/login";
 
   Future<List<Product>> fetchProducts() async {
     final response = await http.get(Uri.parse("$baseUrl/products"));

@@ -1,3 +1,4 @@
+import 'package:assessment_task/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import '../model/product_model.dart';
 import '../screens/product_detail_screen.dart';
@@ -22,7 +23,7 @@ class ProductCard extends StatelessWidget {
       child: AnimatedContainer(
         duration: Duration(milliseconds: 300),
         decoration: BoxDecoration(
-          color: isDark ? Color(0xFF1E2A34) : Color(0xffd0d7e1),
+          color: isDark ? Color(0xFF1E2A34) : Color(AppColor.productCardColor),
           borderRadius: BorderRadius.circular(22),
           boxShadow: [
             if (!isDark)

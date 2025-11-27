@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'provider/product_provider.dart';
 import 'provider/cart_provider.dart';
+import 'provider/wishlist_provider.dart';
 import 'screens/product_list_screen.dart';
 import 'services/api_service.dart';
 
@@ -26,8 +27,13 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider<ProductProvider>.value(value: productProvider),
-        ChangeNotifierProvider<CartProvider>(create: (_) => CartProvider()),
+        ChangeNotifierProvider<ProductProvider>.value(
+          value: productProvider,
+        ),
+        ChangeNotifierProvider<CartProvider>(
+          create: (_) => CartProvider(),
+        ),
+        ChangeNotifierProvider(create: (_) => WishlistProvider()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
