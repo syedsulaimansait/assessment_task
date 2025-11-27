@@ -152,8 +152,11 @@ class _ProductListScreenState extends State<ProductListScreen>
           child: Stack(
             alignment: Alignment.center,
             children: [
-              Icon(Icons.shopping_cart_outlined,
-                  size: 30, color: Color(AppColor.appbarColor)),
+              Icon(
+                Icons.shopping_cart_outlined,
+                size: 30,
+                color: Color(AppColor.appbarColor),
+              ),
               Positioned(
                 top: -5,
                 right: 3,
@@ -231,13 +234,22 @@ class _ProductListScreenState extends State<ProductListScreen>
                 ),
                 child: TextField(
                   onChanged: (value) => setState(() => searchQuery = value),
+
                   style: GoogleFonts.roboto(),
+
                   decoration: InputDecoration(
                     hintText: "Search products...",
                     hintStyle: GoogleFonts.roboto(),
+
                     prefixIcon: Icon(Icons.search),
+
                     border: InputBorder.none,
-                    contentPadding: EdgeInsets.symmetric(horizontal: 16),
+
+                    // 🔥 FIX: Add vertical padding
+                    contentPadding: EdgeInsets.symmetric(
+                      vertical: 14,
+                      horizontal: 16,
+                    ),
                   ),
                 ),
               ),
@@ -252,18 +264,18 @@ class _ProductListScreenState extends State<ProductListScreen>
               child: productStore.isLoading
                   ? _buildShimmer(isGrid)
                   : filteredProducts.isEmpty
-                      ? Center(
-                          child: Text(
-                            "No products found",
-                            style: GoogleFonts.roboto(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        )
-                      : isGrid
-                          ? _buildGridView(filteredProducts)
-                          : _buildListView(filteredProducts),
+                  ? Center(
+                      child: Text(
+                        "No products found",
+                        style: GoogleFonts.roboto(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    )
+                  : isGrid
+                  ? _buildGridView(filteredProducts)
+                  : _buildListView(filteredProducts),
             ),
           ),
         ],
