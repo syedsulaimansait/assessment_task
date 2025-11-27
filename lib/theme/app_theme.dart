@@ -8,5 +8,5 @@ class AppColor extends Color {
   static const int ratingStarColor = 0xFF0E7490;
 
   AppColor(super.value);
-
+  
 }

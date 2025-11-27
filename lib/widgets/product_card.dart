@@ -5,11 +5,18 @@ import '../screens/product_detail_screen.dart';
 
 class ProductCard extends StatelessWidget {
   final Product product;
-  const ProductCard({super.key, required this.product, required bool isList});
+  final bool isList;
+
+  const ProductCard({
+    super.key,
+    required this.product,
+    required this.isList,
+  });
 
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final textTheme = Theme.of(context).textTheme;
 
     return GestureDetector(
       onTap: () {
@@ -21,13 +28,15 @@ class ProductCard extends StatelessWidget {
         );
       },
       child: AnimatedContainer(
-        duration: Duration(milliseconds: 300),
+        duration: const Duration(milliseconds: 300),
         decoration: BoxDecoration(
-          color: isDark ? Color(0xFF1E2A34) : Color(AppColor.productCardColor),
+          color: isDark
+              ? const Color(0xFF1E2A34)
+              : Color(AppColor.productCardColor),
           borderRadius: BorderRadius.circular(22),
           boxShadow: [
             if (!isDark)
-              BoxShadow(
+              const BoxShadow(
                 color: Colors.black12,
                 blurRadius: 10,
                 offset: Offset(0, 4),
@@ -37,38 +46,80 @@ class ProductCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Expanded(
-              child: Hero(
-                tag: 'product_${product.id}',
-                child: ClipRRect(
-                  borderRadius: BorderRadius.vertical(top: Radius.circular(22)),
-                  child: Image.network(product.image, fit: BoxFit.cover),
-                ),
-              ),
-            ),
-
-            Padding(
-              padding: const EdgeInsets.fromLTRB(14, 12, 14, 4),
-              child: Text(
-                product.title,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(fontWeight: FontWeight.w600),
-              ),
-            ),
-
-            Padding(
-              padding: const EdgeInsets.fromLTRB(14, 0, 14, 12),
-              child: Text(
-                "\$${product.price}",
-                style: TextStyle(
-                  fontSize: 15,
-                  color: isDark ? Colors.tealAccent : Colors.black,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
+            _ProductImage(product: product),
+            _ProductTitle(product: product, textTheme: textTheme),
+            _ProductPrice(product: product, isDark: isDark, textTheme: textTheme),
           ],
+        ),
+      ),
+    );
+  }
+}
+class _ProductImage extends StatelessWidget {
+  final Product product;
+  const _ProductImage({required this.product});
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: Hero(
+        tag: 'product_${product.id}',
+        child: ClipRRect(
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(22)),
+          child: Image.network(
+            product.image,
+            fit: BoxFit.cover,
+          ),
+        ),
+      ),
+    );
+  }
+}
+class _ProductTitle extends StatelessWidget {
+  final Product product;
+  final TextTheme textTheme;
+
+  const _ProductTitle({
+    required this.product,
+    required this.textTheme,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(14, 12, 14, 4),
+      child: Text(
+        product.title,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+        style: textTheme.bodyLarge?.copyWith(
+          fontWeight: FontWeight.w600,
+          color: Colors.black87,
+        ),
+      ),
+    );
+  }
+}
+class _ProductPrice extends StatelessWidget {
+  final Product product;
+  final bool isDark;
+  final TextTheme textTheme;
+
+  const _ProductPrice({
+    required this.product,
+    required this.isDark,
+    required this.textTheme,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(14, 0, 14, 12),
+      child: Text(
+        "\$${product.price}",
+        style: textTheme.titleMedium?.copyWith(
+          fontWeight: FontWeight.bold,
+          color: isDark ? Colors.tealAccent : Colors.black,
         ),
       ),
     );

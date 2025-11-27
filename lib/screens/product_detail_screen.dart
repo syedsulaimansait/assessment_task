@@ -16,69 +16,11 @@ class ProductDetailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     final cart = Provider.of<CartProvider>(context, listen: false);
-
-    final theme = Theme.of(context);
-    final textTheme = theme.textTheme;
 
     return Scaffold(
       backgroundColor: Color(AppColor.backgroundColor),
-      appBar: AppBar(
-        backgroundColor: Color(AppColor.backgroundColor),
-        elevation: 0.5,
-        foregroundColor: Colors.black87,
-        title: Text(
-          'Product Details',
-          style: textTheme.titleMedium!.copyWith(fontWeight: FontWeight.bold),
-        ),
-        actions: [
-          // 🔵 CENTER CART ICON BUTTON (REPLACES FAB)
-          Center(
-            child: InkWell(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const CartScreen()),
-                );
-              },
-              child: Stack(
-                alignment: Alignment.center,
-                children: [
-                  Icon(Icons.shopping_cart_outlined, size: 32, color: Color(AppColor.cartBadgeColor)),
-
-                  // 🔴 Cart Badge
-                  Positioned(
-                    top: 10,
-                    right: 10,
-                    child: AnimatedBuilder(
-                      animation: cart,
-                      builder: (_, __) {
-                        return Container(
-                          padding: const EdgeInsets.all(4),
-                          decoration: const BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: Colors.red,
-                          ),
-                          child: Text(
-                            cart.itemCount.toString(),
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ],
-      ),
-
+      appBar: const _DetailAppBar(),
       body: Column(
         children: [
           Expanded(
@@ -87,224 +29,281 @@ class ProductDetailScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // ---------- IMAGE ----------
-                  Hero(
-                    tag: 'product_${product.id}',
-                    child: Center(
-                      child: Container(
-                        //color: Colors.white,
-                        child: CachedNetworkImage(
-                          imageUrl: product.image,
-                          height: 320,
-                          fit: BoxFit.contain,
+                  _ProductImage(product: product),
+                  _ProductInfoBox(product: product),
+                ],
+              ),
+            ),
+          ),
+          _BottomActionButtons(product: product, cart: cart),
+        ],
+      ),
+    );
+  }
+}
+class _DetailAppBar extends StatelessWidget implements PreferredSizeWidget {
+  const _DetailAppBar();
+
+  @override
+  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
+
+  @override
+  Widget build(BuildContext context) {
+    final cart = Provider.of<CartProvider>(context, listen: false);
+    final textTheme = Theme.of(context).textTheme;
+
+    return AppBar(
+      backgroundColor: Color(AppColor.appbarColor),
+      elevation: 0.5,
+      foregroundColor: Colors.black87,
+      title: Text(
+        'Product Details',
+        style: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+      ),
+      centerTitle: true,
+      actions: [
+        Center(
+          child: Padding(
+            padding: const EdgeInsets.only(right: 10),
+            child: InkWell(
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const CartScreen()),
+              ),
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  Icon(
+                    Icons.shopping_cart_outlined,
+                    size: 32,
+                    color: Color(AppColor.cartBadgeColor),
+                  ),
+                  Positioned(
+                    top: -5,
+                    right: 5,
+                    child: AnimatedBuilder(
+                      animation: cart,
+                      builder: (_, __) => Container(
+                        padding: const EdgeInsets.all(4),
+                        decoration: const BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Colors.red,
+                        ),
+                        child: Text(
+                          cart.itemCount.toString(),
+                          style: textTheme.labelSmall?.copyWith(
+                            color: Colors.white,
+                            fontSize: 8,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
-                    ),
-                  ),
-
-                  // ---------- CONTENT BOX ----------
-                  Container(
-                    margin: const EdgeInsets.all(16),
-                    padding: const EdgeInsets.all(18),
-                    decoration: BoxDecoration(
-                      color: Color(AppColor.productCardColor),
-                      borderRadius: BorderRadius.circular(16),
-                      boxShadow: const [
-                        BoxShadow(
-                          color: Colors.black12,
-                          blurRadius: 8,
-                          offset: Offset(0, 3),
-                        ),
-                      ],
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // 🔥 TITLE + HEART WISHLIST BUTTON
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            // Title
-                            Expanded(
-                              child: Text(
-                                product.title,
-                                style: textTheme.titleLarge!.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-
-                            // ❤️ Wishlist toggle
-                            Consumer<WishlistProvider>(
-                              builder: (context, wishlist, _) {
-                                final isFav = wishlist.isInWishlist(product);
-
-                                return GestureDetector(
-                                  onTap: () {
-                                    wishlist.toggleWishlist(product);
-
-                                    Fluttertoast.showToast(
-                                      msg: isFav
-                                          ? "Removed from Wishlist"
-                                          : "Added to Wishlist",
-                                      toastLength: Toast.LENGTH_SHORT,
-                                      gravity: ToastGravity.BOTTOM,
-                                      backgroundColor: Colors.black87,
-                                      textColor: Colors.white,
-                                    );
-                                  },
-                                  child: Icon(
-                                    isFav
-                                        ? Icons.favorite
-                                        : Icons.favorite_border,
-                                    color: isFav ? Colors.red : Colors.black54,
-                                    size: 28,
-                                  ),
-                                );
-                              },
-                            ),
-                          ],
-                        ),
-
-                        const SizedBox(height: 12),
-
-                        // Category + Rating
-                        Row(
-                          children: [
-                            Chip(
-                              label: Text(
-                                product.category,
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.w500,
-                                  color: Colors.white,
-                                ),
-                              ),
-                              backgroundColor: Color(AppColor.cartBadgeColor),
-                              side: BorderSide(color: Colors.teal.shade200),
-                            ),
-                            const SizedBox(width: 12),
-                            RatingStars(rating: product.rating),
-                          ],
-                        ),
-
-                        const SizedBox(height: 16),
-
-                        // Price
-                        Text(
-                          "\$${product.price.toStringAsFixed(2)}",
-                          style: const TextStyle(
-                            fontSize: 28,
-                            fontWeight: FontWeight.bold,
-                            color: Color(AppColor.cartBadgeColor),
-                          ),
-                        ),
-
-                        const SizedBox(height: 16),
-
-                        // Description
-                        Text(
-                          product.description,
-                          style: textTheme.bodyMedium!.copyWith(
-                            height: 1.4,
-                            color: Colors.black87,
-                          ),
-                        ),
-                      ],
                     ),
                   ),
                 ],
               ),
             ),
           ),
+        ),
+      ],
+    );
+  }
+}
+class _ProductImage extends StatelessWidget {
+  final Product product;
+  const _ProductImage({required this.product});
 
-          // ---------- BOTTOM BUTTONS ----------
-          SafeArea(
-            top: false,
-            child: Container(
-              padding: const EdgeInsets.all(16),
-              decoration: const BoxDecoration(
-                color: Color(AppColor.productCardColor),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black12,
-                    blurRadius: 6,
-                    offset: Offset(0, -1),
-                  ),
-                ],
-              ),
-              child: Row(
-                children: [
-                  // Wishlist Button
-                  Expanded(
-                    child: OutlinedButton(
-                      style: OutlinedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                        
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                      onPressed: () {
-                        Fluttertoast.showToast(
-                          msg: "Added to Wishlist",
-                          toastLength: Toast.LENGTH_SHORT,
-                          gravity: ToastGravity.BOTTOM,
-                          backgroundColor: Colors.black87,
-                          textColor: Colors.white,
-                          fontSize: 16.0,
-                        );
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (_) => WishlistScreen()),
-                        );
-                      },
-                      child: const Text(
-                        'Wishlist',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Color(AppColor.cartBadgeColor),
-                        ),
-                      ),
-                    ),
-                  ),
+  @override
+  Widget build(BuildContext context) {
+    return Hero(
+      tag: 'product_${product.id}',
+      child: Center(
+        child: CachedNetworkImage(
+          imageUrl: product.image,
+          height: 320,
+          fit: BoxFit.contain,
+        ),
+      ),
+    );
+  }
+}
+class _ProductInfoBox extends StatelessWidget {
+  final Product product;
+  const _ProductInfoBox({required this.product});
 
-                  const SizedBox(width: 14),
+  @override
+  Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
 
-                  // Add to cart
-                  Expanded(
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                        backgroundColor: const Color(AppColor.cartBadgeColor),
-                        foregroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        elevation: 2,
-                      ),
-                      onPressed: () {
-                        cart.addItem(product);
+    return Container(
+      margin: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: Color(AppColor.productCardColor),
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: const [
+          BoxShadow(color: Colors.black12, blurRadius: 8, offset: Offset(0, 3)),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _TitleWishlistRow(product: product),
+          const SizedBox(height: 12),
+          _CategoryRatingRow(product: product),
+          const SizedBox(height: 16),
 
-                        Fluttertoast.showToast(
-                          msg: "Added to Cart",
-                          toastLength: Toast.LENGTH_SHORT,
-                          gravity: ToastGravity.BOTTOM,
-                          backgroundColor: Colors.black87,
-                          textColor: Colors.white,
-                          fontSize: 16.0,
-                        );
-                      },
-                      child: const Text(
-                        'Add to Cart',
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+          // PRICE
+          Text(
+            "\$${product.price.toStringAsFixed(2)}",
+            style: textTheme.headlineSmall?.copyWith(
+              color: Color(AppColor.cartBadgeColor),
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+
+          const SizedBox(height: 16),
+
+          // DESCRIPTION
+          Text(
+            product.description,
+            style: textTheme.bodyMedium?.copyWith(
+              height: 1.4,
+              color: Colors.black87,
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+class _TitleWishlistRow extends StatelessWidget {
+  final Product product;
+  const _TitleWishlistRow({required this.product});
+
+  @override
+  Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Expanded(
+          child: Text(
+            product.title,
+            style: textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+        Consumer<WishlistProvider>(
+          builder: (context, wishlist, _) {
+            final isFav = wishlist.isInWishlist(product);
+            return GestureDetector(
+              onTap: () {
+                wishlist.toggleWishlist(product);
+                Fluttertoast.showToast(
+                  msg: isFav ? "Removed from Wishlist" : "Added to Wishlist",
+                  backgroundColor: Colors.black87,
+                  textColor: Colors.white,
+                );
+              },
+              child: Icon(
+                isFav ? Icons.favorite : Icons.favorite_border,
+                color: isFav ? Colors.red : Colors.black54,
+                size: 28,
+              ),
+            );
+          },
+        ),
+      ],
+    );
+  }
+}
+class _CategoryRatingRow extends StatelessWidget {
+  final Product product;
+  const _CategoryRatingRow({required this.product});
+
+  @override
+  Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+
+    return Row(
+      children: [
+        Chip(
+          label: Text(
+            product.category,
+            style: textTheme.labelLarge?.copyWith(color: Colors.white),
+          ),
+          backgroundColor: Color(AppColor.cartBadgeColor),
+        ),
+        const SizedBox(width: 12),
+        RatingStars(rating: product.rating),
+      ],
+    );
+  }
+}
+class _BottomActionButtons extends StatelessWidget {
+  final Product product;
+  final CartProvider cart;
+
+  const _BottomActionButtons({required this.product, required this.cart});
+
+  @override
+  Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+
+    return SafeArea(
+      top: false,
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: const BoxDecoration(
+          color: Color(AppColor.productCardColor),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black12,
+              blurRadius: 6,
+              offset: Offset(0, -1),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: OutlinedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => WishlistScreen()),
+                  );
+                },
+                child: Text(
+                  'Wishlist',
+                  style: textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: Color(AppColor.cartBadgeColor),
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Color(AppColor.cartBadgeColor),
+                  foregroundColor: Colors.white,
+                ),
+                onPressed: () => cart.addItem(product),
+                child: Text(
+                  'Add to Cart',
+                  style: textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

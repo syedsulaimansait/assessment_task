@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+
 import '../provider/cart_provider.dart';
 import '../provider/product_provider.dart';
 import '../provider/wishlist_provider.dart';
@@ -18,10 +20,8 @@ class ProductListScreen extends StatefulWidget {
 
 class _ProductListScreenState extends State<ProductListScreen>
     with TickerProviderStateMixin {
-  bool isSearching = false;
-  String searchQuery = "";
   bool showSearch = false;
-  bool isLoading = true;
+  String searchQuery = "";
   bool isGrid = true;
   int _selectedIndex = 0;
 
@@ -29,9 +29,7 @@ class _ProductListScreenState extends State<ProductListScreen>
   late Animation<double> _expandAnimation;
 
   void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
+    setState(() => _selectedIndex = index);
 
     if (index == 2) {
       Navigator.push(
@@ -52,17 +50,13 @@ class _ProductListScreenState extends State<ProductListScreen>
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            icon,
-            size: 26,
-            color: isSelected ? Colors.white : Colors.white70,
-          ),
+          Icon(icon, size: 26, color: Colors.black),
           const SizedBox(height: 3),
           Text(
             label,
-            style: TextStyle(
+            style: GoogleFonts.roboto(
               fontSize: 11,
-              color: isSelected ? Colors.white : Colors.white70,
+              color: Colors.black,
               fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
             ),
           ),
@@ -73,17 +67,16 @@ class _ProductListScreenState extends State<ProductListScreen>
 
   @override
   void initState() {
-    isLoading = false;
     super.initState();
 
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 500),
+      duration: const Duration(milliseconds: 450),
     );
 
     _expandAnimation = CurvedAnimation(
       parent: _controller,
-      curve: Curves.fastOutSlowIn,
+      curve: Curves.easeInOut,
     );
   }
 
@@ -105,48 +98,21 @@ class _ProductListScreenState extends State<ProductListScreen>
       backgroundColor: Color(AppColor.backgroundColor),
       extendBody: true,
 
-      // appBar: AppBar(
-      //   backgroundColor: Color(AppColor.appbarColor),
-      //   elevation: 0,
-      //   //leading: Icon(Icons.menu, color: Colors.white),
-      //   actions: [
-      //     IconButton(
-      //       icon: AnimatedSwitcher(
-      //         duration: const Duration(milliseconds: 200),
-      //         transitionBuilder: (child, anim) =>
-      //             RotationTransition(turns: anim, child: child),
-      //         child: Icon(
-      //           isGrid ? Icons.list_rounded : Icons.grid_view_rounded,
-      //           key: ValueKey(isGrid),
-      //           color: Colors.white,
-      //         ),
-      //       ),
-      //       onPressed: () => setState(() => isGrid = !isGrid),
-      //     ),
-      //   ],
-      // ),
       appBar: AppBar(
         backgroundColor: Color(AppColor.appbarColor),
         elevation: 0,
-        title: isSearching
-            ? TextField(
-                autofocus: true,
-                onChanged: (value) {
-                  setState(() => searchQuery = value);
-                },
-                style: const TextStyle(color: Colors.white),
-                decoration: const InputDecoration(
-                  hintText: "Search products...",
-                  
-                  hintStyle: TextStyle(color: Colors.white70,),
-                  border: InputBorder.none,
-                ),
-              )
-            : const Text("Products", style: TextStyle(color: Colors.white)),
-
+        centerTitle: true,
+        title: Text(
+          "Products",
+          style: GoogleFonts.roboto(
+            fontSize: 20,
+            color: Colors.black,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
         actions: [
           IconButton(
-            icon: Icon(Icons.search, color: Colors.white),
+            icon: Icon(Icons.search, color: Colors.black),
             onPressed: () {
               setState(() {
                 showSearch = !showSearch;
@@ -154,23 +120,16 @@ class _ProductListScreenState extends State<ProductListScreen>
                   _controller.forward();
                 } else {
                   _controller.reverse();
-                  searchQuery = ""; // clear search
+                  searchQuery = "";
                 }
               });
             },
           ),
 
-          // Grid/List toggle
           IconButton(
-            icon: AnimatedSwitcher(
-              duration: const Duration(milliseconds: 200),
-              transitionBuilder: (child, anim) =>
-                  RotationTransition(turns: anim, child: child),
-              child: Icon(
-                isGrid ? Icons.list_rounded : Icons.grid_view_rounded,
-                key: ValueKey(isGrid),
-                color: Colors.white,
-              ),
+            icon: Icon(
+              isGrid ? Icons.list_rounded : Icons.grid_view_rounded,
+              color: Colors.black,
             ),
             onPressed: () => setState(() => isGrid = !isGrid),
           ),
@@ -178,34 +137,26 @@ class _ProductListScreenState extends State<ProductListScreen>
       ),
 
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-
-      // ⭐ Floating Action Button (Cart Button)
       floatingActionButton: SizedBox(
         height: 65,
         width: 65,
         child: FloatingActionButton(
           backgroundColor: Color(AppColor.cartBadgeColor),
-          elevation: 6,
           shape: const CircleBorder(),
           onPressed: () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (_) => const CartScreen()),
+              MaterialPageRoute(builder: (_) => CartScreen()),
             );
           },
           child: Stack(
             alignment: Alignment.center,
             children: [
-              Icon(
-                Icons.shopping_cart_outlined,
-                size: 30,
-                color: Color(AppColor.appbarColor),
-              ),
-
-              // Badge
+              Icon(Icons.shopping_cart_outlined,
+                  size: 30, color: Color(AppColor.appbarColor)),
               Positioned(
-                top: 8,
-                right: 8,
+                top: -5,
+                right: 3,
                 child: AnimatedBuilder(
                   animation: cartProv,
                   builder: (_, __) {
@@ -217,9 +168,9 @@ class _ProductListScreenState extends State<ProductListScreen>
                       ),
                       child: Text(
                         cartProv.itemCount.toString(),
-                        style: const TextStyle(
+                        style: GoogleFonts.roboto(
                           color: Colors.white,
-                          fontSize: 11,
+                          fontSize: 10,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -232,10 +183,9 @@ class _ProductListScreenState extends State<ProductListScreen>
         ),
       ),
 
-      // ⭐ Bottom Navigation Bar with Notch
       bottomNavigationBar: BottomAppBar(
         shape: const CircularNotchedRectangle(),
-        notchMargin: 6.0,
+        notchMargin: 6,
         color: Color(AppColor.appbarColor),
         child: SizedBox(
           height: 60,
@@ -248,9 +198,7 @@ class _ProductListScreenState extends State<ProductListScreen>
                 isSelected: _selectedIndex == 0,
                 onTap: () => _onItemTapped(0),
               ),
-
-              const SizedBox(width: 40), // space for the FAB
-
+              const SizedBox(width: 40),
               _buildBottomItem(
                 label: 'Favorites',
                 icon: Icons.favorite_border,
@@ -263,7 +211,6 @@ class _ProductListScreenState extends State<ProductListScreen>
       ),
 
       body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           SizeTransition(
             sizeFactor: _expandAnimation,
@@ -274,7 +221,7 @@ class _ProductListScreenState extends State<ProductListScreen>
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(12),
-                  boxShadow: [
+                  boxShadow: const [
                     BoxShadow(
                       color: Colors.black12,
                       blurRadius: 6,
@@ -283,11 +230,11 @@ class _ProductListScreenState extends State<ProductListScreen>
                   ],
                 ),
                 child: TextField(
-                  onChanged: (value) {
-                    setState(() => searchQuery = value);
-                  },
-                  decoration: const InputDecoration(
+                  onChanged: (value) => setState(() => searchQuery = value),
+                  style: GoogleFonts.roboto(),
+                  decoration: InputDecoration(
                     hintText: "Search products...",
+                    hintStyle: GoogleFonts.roboto(),
                     prefixIcon: Icon(Icons.search),
                     border: InputBorder.none,
                     contentPadding: EdgeInsets.symmetric(horizontal: 16),
@@ -297,7 +244,7 @@ class _ProductListScreenState extends State<ProductListScreen>
             ),
           ),
 
-          SizedBox(height: 12),
+          const SizedBox(height: 12),
 
           Expanded(
             child: Padding(
@@ -305,18 +252,18 @@ class _ProductListScreenState extends State<ProductListScreen>
               child: productStore.isLoading
                   ? _buildShimmer(isGrid)
                   : filteredProducts.isEmpty
-                  ? const Center(
-                      child: Text(
-                        "No products found",
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    )
-                  : isGrid
-                  ? _buildGridView(filteredProducts)
-                  : _buildListView(filteredProducts),
+                      ? Center(
+                          child: Text(
+                            "No products found",
+                            style: GoogleFonts.roboto(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        )
+                      : isGrid
+                          ? _buildGridView(filteredProducts)
+                          : _buildListView(filteredProducts),
             ),
           ),
         ],
@@ -333,18 +280,16 @@ class _ProductListScreenState extends State<ProductListScreen>
         crossAxisSpacing: 18,
         mainAxisSpacing: 18,
       ),
-      itemBuilder: (context, index) {
-        final product = products[index];
-        return _productCard(product);
-      },
+      itemBuilder: (context, index) => _productCard(products[index]),
     );
   }
 
   Widget _buildListView(List<dynamic> products) {
     return ListView.builder(
       itemCount: products.length,
-      itemBuilder: (context, index) {
+      itemBuilder: (_, index) {
         final product = products[index];
+
         return Card(
           color: Color(AppColor.productCardColor),
           margin: const EdgeInsets.only(bottom: 14),
@@ -355,27 +300,21 @@ class _ProductListScreenState extends State<ProductListScreen>
             contentPadding: const EdgeInsets.all(12),
             leading: Hero(
               tag: 'product_${product.id}',
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(10),
-                child: Image.network(
-                  product.image,
-                  width: 60,
-                  height: 60,
-                  fit: BoxFit.cover,
-                ),
-              ),
+              child: Image.network(product.image, width: 60, height: 60),
             ),
 
             title: Text(
               product.title,
               maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(fontWeight: FontWeight.w600),
+              style: GoogleFonts.roboto(fontWeight: FontWeight.w600),
             ),
 
             subtitle: Text(
               "\$${product.price}",
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              style: GoogleFonts.roboto(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
             ),
 
             onTap: () {
@@ -404,18 +343,16 @@ class _ProductListScreenState extends State<ProductListScreen>
         ),
         itemBuilder: (_, __) => ShimmerCard(),
       );
-    } else {
-      return ListView.builder(
-        itemCount: 6,
-        itemBuilder: (_, __) => Padding(
-          padding: const EdgeInsets.only(bottom: 14),
-          child: ShimmerCard(),
-        ),
-      );
     }
+    return ListView.builder(
+      itemCount: 6,
+      itemBuilder: (_, __) => Padding(
+        padding: const EdgeInsets.only(bottom: 14),
+        child: ShimmerCard(),
+      ),
+    );
   }
 
-  // Product Card
   Widget _productCard(product) {
     final wishlist = Provider.of<WishlistProvider>(context);
 
@@ -430,9 +367,9 @@ class _ProductListScreenState extends State<ProductListScreen>
       },
       child: Container(
         decoration: BoxDecoration(
-          color: const Color(AppColor.productCardColor),
+          color: Color(AppColor.productCardColor),
           borderRadius: BorderRadius.circular(22),
-          boxShadow: [
+          boxShadow: const [
             BoxShadow(
               color: Colors.black12,
               blurRadius: 10,
@@ -441,17 +378,12 @@ class _ProductListScreenState extends State<ProductListScreen>
           ],
         ),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Expanded(
               child: Hero(
                 tag: 'product_${product.id}',
-                child: ClipRRect(
-                  borderRadius: const BorderRadius.vertical(
-                    top: Radius.circular(22),
-                  ),
-                  child: Image.network(product.image, fit: BoxFit.contain),
-                ),
+                child: Image.network(product.image, fit: BoxFit.contain),
               ),
             ),
 
@@ -461,7 +393,7 @@ class _ProductListScreenState extends State<ProductListScreen>
                 product.title,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: const TextStyle(fontWeight: FontWeight.w600),
+                style: GoogleFonts.roboto(fontWeight: FontWeight.w600),
               ),
             ),
 
@@ -472,9 +404,8 @@ class _ProductListScreenState extends State<ProductListScreen>
                 children: [
                   Text(
                     "\$${product.price}",
-                    style: const TextStyle(
+                    style: GoogleFonts.roboto(
                       fontSize: 15,
-                      color: Colors.black,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
