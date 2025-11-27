@@ -97,6 +97,7 @@ class _ProductListScreenState extends State<ProductListScreen>
     return Scaffold(
       backgroundColor: Color(AppColor.backgroundColor),
       extendBody: true,
+      resizeToAvoidBottomInset: false,
 
       appBar: AppBar(
         backgroundColor: Color(AppColor.appbarColor),
@@ -137,51 +138,55 @@ class _ProductListScreenState extends State<ProductListScreen>
       ),
 
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      floatingActionButton: SizedBox(
-        height: 65,
-        width: 65,
-        child: FloatingActionButton(
-          backgroundColor: Color(AppColor.cartBadgeColor),
-          shape: const CircleBorder(),
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => CartScreen()),
-            );
-          },
-          child: Stack(
-            alignment: Alignment.center,
-            children: [
-              Icon(
-                Icons.shopping_cart_outlined,
-                size: 30,
-                color: Color(AppColor.appbarColor),
-              ),
-              Positioned(
-                top: -5,
-                right: 3,
-                child: AnimatedBuilder(
-                  animation: cartProv,
-                  builder: (_, __) {
-                    return Container(
-                      padding: const EdgeInsets.all(3),
-                      decoration: const BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: Colors.red,
-                      ),
-                      child: Text(
-                        cartProv.itemCount.toString(),
-                        style: GoogleFonts.roboto(
-                          color: Colors.white,
-                          fontSize: 10,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    );
-                  },
+      floatingActionButton: Container(
+        margin: const EdgeInsets.only(bottom: 6),
+        child: SizedBox(
+          height: 65,
+          width: 65,
+          child: FloatingActionButton(
+            
+            backgroundColor: Color(AppColor.cartBadgeColor),
+            shape: const CircleBorder(),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => CartScreen()),
+              );
+            },
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                Icon(
+                  Icons.shopping_cart_outlined,
+                  size: 30,
+                  color: Color(AppColor.appbarColor),
                 ),
-              ),
-            ],
+                Positioned(
+                  top: -5,
+                  right: 3,
+                  child: AnimatedBuilder(
+                    animation: cartProv,
+                    builder: (_, __) {
+                      return Container(
+                        padding: const EdgeInsets.all(3),
+                        decoration: const BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Colors.red,
+                        ),
+                        child: Text(
+                          cartProv.itemCount.toString(),
+                          style: GoogleFonts.roboto(
+                            color: Colors.white,
+                            fontSize: 10,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
