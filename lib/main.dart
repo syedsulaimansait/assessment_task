@@ -1,46 +1,37 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'provider/product_provider.dart';
 import 'provider/cart_provider.dart';
+import 'provider/product_provider.dart';
 import 'provider/wishlist_provider.dart';
 import 'screens/product_list_screen.dart';
-import 'services/api_service.dart';
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
+  WidgetsFlutterBinding.ensureInitialized(); // Ensure async operations are safe
 
-  final productProvider = ProductProvider();
-  final api = ApiService();
-
-  /// Fetch products before running the app
-  final products = await api.fetchProducts();
-  productProvider.setProducts(products);
-
-  runApp(MyApp(productProvider: productProvider));
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => ProductProvider()),
+        ChangeNotifierProvider(create: (_) => CartProvider()),
+        ChangeNotifierProvider(create: (_) => WishlistProvider()),
+      ],
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
-  final ProductProvider productProvider;
-  const MyApp({super.key, required this.productProvider});
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    
-    return MultiProvider(
-      providers: [
-        ChangeNotifierProvider<ProductProvider>.value(
-          value: productProvider,
-        ),
-        ChangeNotifierProvider<CartProvider>(
-          create: (_) => CartProvider(),
-        ),
-        ChangeNotifierProvider(create: (_) => WishlistProvider()),
-      ],
-      child: MaterialApp(
-        debugShowCheckedModeBanner: false,
-        theme: ThemeData(useMaterial3: true),
-        home: const ProductListScreen(),
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      title: 'E-Commerce App',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
       ),
+      home: const ProductListScreen(), // Ensure you have a valid home screen
     );
   }
 }

@@ -298,6 +298,7 @@ class _BottomActionButtons extends StatelessWidget {
                   'Add to Cart',
                   style: textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.bold,
+                    color: Colors.white,
                   ),
                 ),
               ),

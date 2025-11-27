@@ -31,7 +31,9 @@ class CartScreen extends StatelessWidget {
         centerTitle: true,
       ),
 
-      body: cart.items.isEmpty
+      body: SafeArea(
+        bottom: true,
+        child:cart.items.isEmpty
           ? Center(
               child: Text(
                 'Your cart is empty',
@@ -167,7 +169,7 @@ class CartScreen extends StatelessWidget {
 
                 // Bottom Checkout
                 Container(
-                  padding: const EdgeInsets.all(20),
+                  padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
                     color: const Color(AppColor.productCardColor),
                     borderRadius: const BorderRadius.vertical(
@@ -236,6 +238,6 @@ class CartScreen extends StatelessWidget {
                 ),
               ],
             ),
-    );
+    ));
   }
 }
